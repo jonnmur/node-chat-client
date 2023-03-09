@@ -98,8 +98,10 @@ onBeforeUnmount(() => {
   <button @click="getMessages()" type="button">Load more</button>
   <div v-if="messages">
     <div v-for="message in messages" v-bind:key="message.id">
-      <div id="msgbox">
-        <strong>{{ new Date(message.created_at) }} - {{ message.User.username }}:</strong> <p>{{ message.body }}</p>
+      <div class="msgbox" id="msgbox">
+        <div class="msg-date">{{ new Date(message.created_at) }}</div>
+        <div class="msg-author">{{ message.User.username }}:</div>
+        <div class="msg-body">{{ message.body }}</div>
       </div>
     </div>
   </div>
@@ -110,3 +112,24 @@ onBeforeUnmount(() => {
       <button @click="sendMessage(message)" type="button">Send</button>
   </form> 
 </template>
+
+<style scoped>
+  .msgbox {
+    background-color: rgb(247, 247, 247);
+    padding: 10px;
+    border: 2px solid rgba(232, 232, 232, 0.507);
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .msg-date {
+    font-size: smaller;
+  }
+  .msg-author {
+    margin-top: 5px;
+    font-weight: bold;
+  }
+  .msg-body {
+    margin-top: 5px;
+  }
+</style>

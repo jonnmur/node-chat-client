@@ -29,11 +29,30 @@ const login = async (username, password) => {
 
 <template>
     <form>
-        <label for="username">Username:</label><br>
-        <input v-model="username" type="text" id="username" name="username"><br>
-        <label for="password">Password:</label><br>
-        <input v-model="password" type="password" id="password" name="password"><br><br>
-        <button @click="login(username, password)" type="button">Login</button>
-        <div @click="router.push('/register')">Register</div>
+        <div class="loginbox">
+          <label class="inputlabel" for="username">Username:</label><br>
+          <input v-model="username" type="text" id="username" name="username"><br>
+          <label class="inputlabel" for="password">Password:</label><br>
+          <input v-model="password" type="password" id="password" name="password"><br><br>
+          <button @click="login(username, password)" type="button">Login</button>
+          <div @click="router.push('/register')">Register</div>
+      </div>
     </form> 
 </template>
+
+<style scoped>
+  .loginbox {
+    background-color: rgb(247, 247, 247);
+    height: 150px;
+    width: 300px;
+    padding: 20px;
+    border: 2px solid rgba(232, 232, 232, 0.507);
+    border-radius: 3%;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+</style>
