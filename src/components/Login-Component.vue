@@ -47,10 +47,9 @@ const login = async (username, password) => {
     width: 300px;
     padding: 20px;
     border: 2px solid rgba(232, 232, 232, 0.507);
-    border-radius: 3%;
     margin: 0;
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
