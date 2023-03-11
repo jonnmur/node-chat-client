@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeUnmount, onBeforeMount } from 'vue'
+import { ref, onBeforeUnmount, onBeforeMount, nextTick } from 'vue'
 import SocketioService from '../services/socketio.service.js';
 import axios from 'axios';
 
@@ -19,6 +19,8 @@ const pushSocketIoUpdates = async () => {
     if (data.user_id !== SocketioService.socket.auth.id) {
       messages.value.push(data);
     }
+
+    scroll(true);
   });
 
   SocketioService.socket.on('syncConnectedUsers', (users) => {
@@ -43,7 +45,7 @@ const pushSocketIoUpdates = async () => {
   });
 }
 
-const getMessages = async () => {
+const getMessages = async (loadMore) => {
   try {
     const response = await axios.get(process.env.VUE_APP_SERVER_URL + '/api/message?limit=10&offset=' + offset.value, { withCredentials: true });
 
@@ -56,6 +58,12 @@ const getMessages = async () => {
     if (error.response.status === 401) {
       router.push('/login');
     }
+  }
+
+  if (!loadMore) {
+    scroll(true);
+  } else {
+    scroll();
   }
 }
 
@@ -72,11 +80,29 @@ const sendMessage = async (msg) => {
       router.push('/login');
     }
   }
+
+  scroll(true);
+}
+
+const scroll = async (toBottom) => {
+  const messagelist = document.getElementById('messagelist');
+
+  if (!toBottom) {
+    const messagelistHeight = messagelist.scrollHeight;
+
+    await nextTick();
+
+    messagelist.scroll(0, messagelist.scrollHeight - messagelistHeight);
+  } else {
+    await nextTick();
+
+    messagelist.scroll(0, messagelist.scrollHeight);
+  }
 }
 
 onBeforeMount(() => {
-  getMessages();
   pushSocketIoUpdates();
+  getMessages();
 });
 
 onBeforeUnmount(() => {
@@ -87,39 +113,83 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  Users online:
-  <div v-for="connectedUser in connectedUsers" v-bind:key="connectedUser.id">
-    
-    <strong v-if="connectedUser.id === SocketioService.socket.auth.id">{{ connectedUser.username }}</strong>
-    <span v-else>{{ connectedUser.username }}</span>
-  </div>
-  <hr>
 
-  <button @click="getMessages()" type="button">Load more</button>
-  <div v-if="messages">
-    <div v-for="message in messages" v-bind:key="message.id">
-      <div class="msgbox" id="msgbox">
-        <div class="msg-date">{{ new Date(message.created_at) }}</div>
-        <div class="msg-author">{{ message.User.username }}:</div>
-        <div class="msg-body">{{ message.body }}</div>
+  <div class="row">
+    <div class="col-2 overflow-auto userlist">
+      Users online:
+      <div v-for="connectedUser in connectedUsers" v-bind:key="connectedUser.id">
+        <div>
+          <strong v-if="connectedUser.id === SocketioService.socket.auth.id">{{ connectedUser.username }}</strong>
+          <span v-else>{{ connectedUser.username }}</span>
+        </div>
       </div>
+    </div>
+
+    <div class="col-10 messagecontainer">
+      <div class="messagelist" id="messagelist">
+        <button @click="getMessages(true)" type="button">Load more</button>
+        <div v-if="messages">
+          <div v-for="message in messages" v-bind:key="message.id">
+            <div v-bind:class="{ 'mymsgbox' : (message.user_id === SocketioService.socket.auth.id || !message.user_id) }" class="msgbox" id="msgbox">
+              <div class="msg-date">{{ new Date(message.created_at) }}</div>
+              <div class="msg-author">{{ message.User.username }}:</div>
+              <div class="msg-body">{{ message.body }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="messagesend">
+        <form>
+          <label for="message">Message:</label><br>
+          <input v-model="message" type="text" id="message" name="message"><br>
+          <button @click="sendMessage(message)" type="button">Send</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
-  <form>
-      <label for="message">Message:</label><br>
-      <input v-model="message" type="text" id="message" name="message"><br>
-      <button @click="sendMessage(message)" type="button">Send</button>
-  </form> 
 </template>
 
 <style scoped>
+  .userlist {
+    background-color: rgb(0, 136, 255, 0.3);
+    overflow-y: scroll;
+    height: 100vh;
+  }
+
+  .messagecontainer {
+    padding: 0;
+  }
+
+  .messagelist {
+    background-color: rgb(0, 136, 255, 0.1);
+    overflow-y: scroll;
+    height: calc(100vh - 100px);
+    padding: 12px;
+  }
+
+  .messagesend {
+    background-color: rgb(241, 241, 250);
+    height: 100px;
+    padding: 12px;
+  }
+
   .msgbox {
-    background-color: rgb(247, 247, 247);
+    background-color: rgb(255, 255, 255);
     padding: 10px;
-    border: 2px solid rgba(232, 232, 232, 0.507);
+    border-radius: 10px 10px 10px 0px;
     margin-top: 5px;
     margin-bottom: 5px;
+    box-shadow: 0px 1px 2px 0px rgb(0, 0, 0, 0.2);
+  }
+
+  .mymsgbox {
+    background-color: rgba(17, 160, 255, 0.8);
+    border-radius: 10px 10px 0px 10px;
+    color: rgb(255, 255, 255);
+    box-shadow: 0px 1px 2px 0px rgb(0, 0, 0, 0.2);
   }
 
   .msg-date {
