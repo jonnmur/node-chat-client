@@ -119,7 +119,7 @@ onBeforeUnmount(() => {
     <div class="col-2 overflow-auto userlist">
       Users online:
       <div v-for="connectedUser in connectedUsers" v-bind:key="connectedUser.id">
-        <div>
+        <div class="connecteduser">
           <strong v-if="connectedUser.id === SocketioService.socket.auth.id">{{ connectedUser.username }}</strong>
           <span v-else>{{ connectedUser.username }}</span>
         </div>
@@ -162,6 +162,10 @@ onBeforeUnmount(() => {
     height: 100vh;
   }
 
+  .connecteduser {
+    animation: fadeIn 0.5s;
+  }
+
   .messagecontainer {
     padding: 0;
   }
@@ -186,6 +190,7 @@ onBeforeUnmount(() => {
     margin-top: 5px;
     margin-bottom: 5px;
     box-shadow: 0px 1px 2px 0px rgb(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s;
   }
 
   .mymsgbox {
@@ -193,6 +198,7 @@ onBeforeUnmount(() => {
     border-radius: 10px 10px 0px 10px;
     color: rgb(255, 255, 255);
     box-shadow: 0px 1px 2px 0px rgb(0, 0, 0, 0.2);
+    animation: fadeIn 0.5s;
   }
 
   .msg-date {
@@ -207,5 +213,10 @@ onBeforeUnmount(() => {
   .msg-body {
     font-size: smaller;
     margin-top: 5px;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
   }
 </style>
