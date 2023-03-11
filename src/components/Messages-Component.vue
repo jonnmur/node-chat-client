@@ -2,6 +2,7 @@
 import { ref, onBeforeUnmount, onBeforeMount, nextTick } from 'vue'
 import SocketioService from '../services/socketio.service.js';
 import axios from 'axios';
+import { DateTime } from 'luxon';
 
 import {useRouter} from "vue-router";
 
@@ -71,7 +72,7 @@ const sendMessage = async (msg) => {
   try {
     await axios.post(process.env.VUE_APP_SERVER_URL + '/api/message', { body: msg }, { withCredentials: true });
 
-    messages.value.push({ created_at: new Date(), body: msg, User: SocketioService.socket.auth });
+    messages.value.push({ created_at: (new DateTime(DateTime.now())).toLocaleString(DateTime.DATETIME_MED), body: msg, User: SocketioService.socket.auth });
     message.value = '';
 
   } catch (error) {
@@ -131,8 +132,10 @@ onBeforeUnmount(() => {
         <div v-if="messages">
           <div v-for="message in messages" v-bind:key="message.id">
             <div v-bind:class="{ 'mymsgbox' : (message.user_id === SocketioService.socket.auth.id || !message.user_id) }" class="msgbox" id="msgbox">
-              <div class="msg-date">{{ new Date(message.created_at) }}</div>
-              <div class="msg-author">{{ message.User.username }}:</div>
+              <div class="row">
+                <div class="msg-author col-6">{{ message.User.username }}:</div>
+                <div class="msg-date col-6">{{ (new DateTime(message.created_at)).toLocaleString(DateTime.DATETIME_MED) }}</div>
+              </div>
               <div class="msg-body">{{ message.body }}</div>
             </div>
           </div>
@@ -193,13 +196,16 @@ onBeforeUnmount(() => {
   }
 
   .msg-date {
-    font-size: smaller;
+    padding-right: 15px;
+    font-size: x-small;
+    text-align: right;
   }
   .msg-author {
-    margin-top: 5px;
+    font-size: smaller;
     font-weight: bold;
   }
   .msg-body {
+    font-size: smaller;
     margin-top: 5px;
   }
 </style>
