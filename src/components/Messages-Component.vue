@@ -34,11 +34,11 @@ const pushSocketIoUpdates = async () => {
   });
 
   SocketioService.socket.on('userConnected', (user) => {
-    console.log(user.username + ' connected');
+    console.log(user.display_name + ' connected');
   });
 
   SocketioService.socket.on('userDisconnected', (user) => {
-    console.log(user.username + ' disconnected');
+    console.log(user.display_name + ' disconnected');
     const index = connectedUsers.value.findIndex(connectedUser => connectedUser.id === user.id);
     if (index > -1) {
       connectedUsers.value.splice(index, 1);
@@ -120,8 +120,8 @@ onBeforeUnmount(() => {
       Users online:
       <div v-for="connectedUser in connectedUsers" v-bind:key="connectedUser.id">
         <div class="connecteduser">
-          <strong v-if="connectedUser.id === SocketioService.socket.auth.id">{{ connectedUser.username }}</strong>
-          <span v-else>{{ connectedUser.username }}</span>
+          <strong v-if="connectedUser.id === SocketioService.socket.auth.id">{{ connectedUser.display_name }}</strong>
+          <span v-else>{{ connectedUser.display_name }}</span>
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@ onBeforeUnmount(() => {
           <div v-for="message in messages" v-bind:key="message.id">
             <div v-bind:class="{ 'mymsgbox' : (message.user_id === SocketioService.socket.auth.id || !message.user_id) }" class="msgbox" id="msgbox">
               <div class="row">
-                <div class="msg-author col-6">{{ message.User.username }}:</div>
+                <div class="msg-author col-6">{{ message.User.display_name }}:</div>
                 <div class="msg-date col-6">{{ (new DateTime(message.created_at)).toLocaleString(DateTime.DATETIME_MED) }}</div>
               </div>
               <div class="msg-body">{{ message.body }}</div>
