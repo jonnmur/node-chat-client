@@ -4,13 +4,15 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 
-const username = '';
+const email = '';
+const display_name = '';
 const password = '';
 
-const register = async (username, password) => {
+const register = async (email, display_name, password) => {
   try {
     const response = await axios.post(process.env.VUE_APP_SERVER_URL + '/api/auth/register', {
-      username: username ,
+      email: email,
+      display_name: display_name,
       password: password,
     },
     {
@@ -30,11 +32,13 @@ const register = async (username, password) => {
 <template>
     <form>
       <div class="loginbox">
-        <label for="username">Username:</label><br>
-        <input v-model="username" type="text" id="username" name="username"><br>
+        <label for="email">E-mail:</label><br>
+        <input v-model="email" type="text" id="email" name="email"><br>
+        <label for="display_name">Display name:</label><br>
+        <input v-model="display_name" type="text" id="display_name" name="display_name"><br>
         <label for="password">Password:</label><br>
         <input v-model="password" type="password" id="password" name="password"><br><br>
-        <button @click="register(username, password)" type="button">Register</button>
+        <button @click="register(email, display_name, password)" type="button">Register</button>
       </div>
     </form> 
 </template>

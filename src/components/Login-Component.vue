@@ -4,13 +4,13 @@ import {useRouter} from "vue-router";
 
 const router = useRouter();
 
-const username = '';
+const email = '';
 const password = '';
 
-const login = async (username, password) => {
+const login = async (email, password) => {
   try {
-    const response = await axios.post(process.env.VUE_APP_SERVER_URL + '/api/auth/login', {
-      username: username ,
+    const response = await axios.post(`${process.env.VUE_APP_SERVER_URL}/api/auth/login`, {
+      email: email,
       password: password,
     },
     {
@@ -25,16 +25,21 @@ const login = async (username, password) => {
   }
 }
 
+const googleAuth = () => {
+  window.location.href=`${process.env.VUE_APP_SERVER_URL}/api/auth/google?client=${process.env.VUE_APP_CLIENT_URL}`;
+}
+
 </script>
 
 <template>
     <form>
         <div class="loginbox">
-          <label class="inputlabel" for="username">Username:</label><br>
-          <input v-model="username" type="text" id="username" name="username"><br>
+          <label class="inputlabel" for="email">E-mail:</label><br>
+          <input v-model="email" type="text" id="email" name="email"><br>
           <label class="inputlabel" for="password">Password:</label><br>
           <input v-model="password" type="password" id="password" name="password"><br><br>
-          <button @click="login(username, password)" type="button">Login</button>
+          <button @click="login(email, password)" type="button">Login</button>
+          <div @click="googleAuth">Google Auth</div>
           <div @click="router.push('/register')">Register</div>
       </div>
     </form> 
